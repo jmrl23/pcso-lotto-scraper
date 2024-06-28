@@ -10,17 +10,12 @@ export default class LottoScraper {
   ) {}
 
   public async init(): Promise<LottoScraper> {
-    console.log('LottoScraper: Initializing.');
-
     this.browser = await puppeteer.launch({
       executablePath: this.browserExecPath,
       headless: true,
     });
     this.page = await this.browser.newPage();
     await this.page.goto(this.url, { waitUntil: 'networkidle2' });
-
-    console.log('LottoScraper: Initialized.');
-
     return this;
   }
 
@@ -32,17 +27,12 @@ export default class LottoScraper {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     await this.page?.waitForNetworkIdle({ concurrency: 2 });
 
-    console.log('LottoScraper: Processing response.');
-
     try {
       await this.page?.waitForSelector('table', { timeout: 5000 });
     } catch (error) {
-      console.log('LottoScraper: \x1b[31mAn error occurs, try again.\x1b[0m');
+      console.error('LottoScraper: \x1b[31mAn error occurs, try again.\x1b[0m');
       return [];
     }
-
-    console.log('LottoScraper: Raw data received.');
-    console.log('LottoScraper: Parsing raw data.');
 
     const rows = ((await this.page?.$$('table > tbody > tr')) ?? []).slice(
       0,
@@ -69,15 +59,10 @@ export default class LottoScraper {
       if (filter && !filter(result)) continue;
       results.push(result);
     }
-
-    console.log('LottoScraper: Success.');
-
     return results;
   }
 
   private async submitForm(from: Date, to: Date): Promise<void> {
-    console.log('LottoScraper: Processing request.');
-
     await Promise.all([
       this.page?.select(
         'select[name="ctl00$ctl00$cphContainer$cpContent$ddlStartMonth"]',
