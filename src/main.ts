@@ -3,7 +3,7 @@ import LottoScraper, { type Payload } from './LottoScraper';
 async function main() {
   const lottoScrapper = await new LottoScraper().init();
   const payload: Payload = {
-    from: new Date('June 01 2024'),
+    from: new Date('March 01 2024'),
     games: [
       'Grand Lotto 6/55',
       'Lotto 6/42',
@@ -20,7 +20,7 @@ async function main() {
       const data: Record<string, unknown> = { ...result };
       data.combinations = result.combinations.join('-');
       data.date = result.date.toLocaleDateString('en');
-      data.jackpot = 'P ' + result.jackpot.toLocaleString('en');
+      data.jackpot = '₱' + result.jackpot.toLocaleString('en');
       return data;
     }),
   );

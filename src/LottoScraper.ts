@@ -1,3 +1,4 @@
+import ms from 'ms';
 import puppeteer, { type Browser, type Page } from 'puppeteer-core';
 
 export default class LottoScraper {
@@ -12,10 +13,13 @@ export default class LottoScraper {
   public async init(): Promise<LottoScraper> {
     this.browser = await puppeteer.launch({
       executablePath: this.browserExecPath,
-      headless: true,
+      headless: false,
+      timeout: ms('1s'),
     });
     this.page = await this.browser.newPage();
-    await this.page.goto(this.url, { waitUntil: 'networkidle2' });
+    await this.page.goto(this.url, {
+      timeout: ms('10s'),
+    });
     return this;
   }
 
@@ -23,12 +27,8 @@ export default class LottoScraper {
     const { filter, games, limit } = payload;
     await this.submitForm(payload.from, payload.to ?? new Date());
 
-    // TODO: find a better alternative
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    await this.page?.waitForNetworkIdle({ concurrency: 2 });
-
     try {
-      await this.page?.waitForSelector('table', { timeout: 5000 });
+      await this.page?.waitForSelector('table', { timeout: ms('1s') });
     } catch (error) {
       console.error('LottoScraper: \x1b[31mAn error occurs, try again.\x1b[0m');
       return [];
@@ -90,9 +90,18 @@ export default class LottoScraper {
       ),
     ]);
 
-    await this.page?.click(
-      'input[name="ctl00$ctl00$cphContainer$cpContent$btnSearch"]',
+    await new Promise((resolve) => setTimeout(resolve, ms('1s')));
+    const submitButton = await this.page?.waitForSelector(
+      'form#mainform input[name="ctl00$ctl00$cphContainer$cpContent$btnSearch"]',
     );
+    await submitButton?.click();
+    await Promise.all([
+      this.page?.waitForNavigation({
+        waitUntil: 'domcontentloaded',
+        timeout: ms('10s'),
+      }),
+      new Promise((resolve) => setTimeout(resolve, ms('1s'))),
+    ]);
   }
 
   public async exit(): Promise<void> {
