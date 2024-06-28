@@ -1,0 +1,21 @@
+{
+  "name": "pcso-lotto-scraper",
+  "version": "1.0.0",
+  "main": "build/main.js",
+  "author": "Jomariel Gaitera <gaiterajomariel@gmail.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "tsc --build",
+    "start": "node .",
+    "start:dev": "ts-node src/main.ts"
+  },
+  "dependencies": {
+    "puppeteer-core": "^22.12.1"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.5.7",
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
