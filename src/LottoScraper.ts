@@ -13,7 +13,7 @@ export default class LottoScraper {
   public async init(): Promise<LottoScraper> {
     this.browser = await puppeteer.launch({
       executablePath: this.browserExecPath,
-      headless: false,
+      headless: true,
       timeout: ms('1s'),
     });
     this.page = await this.browser.newPage();
